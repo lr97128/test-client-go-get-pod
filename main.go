@@ -49,4 +49,16 @@ func main() {
 		fmt.Printf("index is: %d, ip is: %s\n", index, ip.IP)
 	}
 	fmt.Printf("pod ip is: %s\n", pod.Status.PodIP)
+	var rsName string
+	for index, ownerReference := range pod.ObjectMeta.GetOwnerReferences() {
+		rsName = ownerReference.Name
+		fmt.Printf("pod's index: %d, ownerReferenceKind: %s, ownerReferenceName: %s\n", index, ownerReference.Kind, rsName)
+	}
+	rs, err := clientSet.AppsV1().ReplicaSets(ns).Get(ctx, rsName, metav1.GetOptions{})
+	if err != nil {
+		log.Panic(err)
+	}
+	for index, ownerReference := range rs.ObjectMeta.GetOwnerReferences() {
+		fmt.Printf("ReplicaSet's index: %d, ownerReferenceKind: %s, ownerReferenceName: %s\n", index, ownerReference.Kind, ownerReference.Name)
+	}
 }
